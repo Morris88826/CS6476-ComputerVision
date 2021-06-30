@@ -228,6 +228,7 @@ def test_my_conv2d_numpy_nonsquare_filter():
         img[:, :, i] = channel_img
 
     filtered_img = my_conv2d_numpy(copy.deepcopy(img), filter)
+    
 
     gt_filtered_channel_img = np.array(
         [

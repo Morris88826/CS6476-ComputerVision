@@ -5,6 +5,7 @@ PyTorch tutorial on constructing neural networks:
 https://pytorch.org/tutorials/beginner/blitz/neural_networks_tutorial.html
 """
 import numpy as np
+from numpy.core.fromnumeric import repeat
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -51,9 +52,12 @@ class HybridImageModel(nn.Module):
         ############################
         ### TODO: YOUR CODE HERE ###
 
-        raise NotImplementedError(
-            "`get_kernel` function in `part2_models.py` needs to be implemented"
-        )
+        kernel = create_Gaussian_kernel_2D(cutoff_frequency) # shape (k,k)
+        k = kernel.shape[0]
+        kernel = kernel[np.newaxis, np.newaxis, ::]
+        kernel = np.repeat(kernel, repeats=self.n_channels, axis=0)
+
+        kernel = torch.Tensor(kernel)
 
         ### END OF STUDENT CODE ####
         ############################
@@ -82,9 +86,7 @@ class HybridImageModel(nn.Module):
         ############################
         ### TODO: YOUR CODE HERE ###
 
-        raise NotImplementedError(
-            "`low_pass` function in `part2_models.py` needs to be implemented"
-        )
+        filtered_image = torch.nn.functional.conv2d(x, kernel, padding=kernel.shape[-1]//2, groups=self.n_channels)
 
         ### END OF STUDENT CODE ####
         ############################
@@ -124,9 +126,11 @@ class HybridImageModel(nn.Module):
         ############################
         ### TODO: YOUR CODE HERE ###
 
-        raise NotImplementedError(
-            "`forward` function in `part2_models.py` needs to be implemented"
-        )
+        cutoff_frequency = cutoff_frequency.item()
+        kernel = self.get_kernel(cutoff_frequency)
+        low_frequencies = self.low_pass(image1, kernel)
+        high_frequencies = image2 - self.low_pass(image2, kernel)
+        hybrid_image = torch.clamp(low_frequencies + high_frequencies, 0, 1)
 
         ### END OF STUDENT CODE ####
         ############################

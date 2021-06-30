@@ -35,9 +35,7 @@ def my_conv2d_pytorch(image: torch.Tensor, kernel: torch.Tensor) -> torch.Tensor
     ############################
     ### TODO: YOUR CODE HERE ###
 
-    raise NotImplementedError(
-        "`my_conv2d_pytorch` function in `part3.py` needs to be implemented"
-    )
+    filtered_image = F.conv2d(image, kernel, padding=kernel.shape[-1]//2, groups=image.shape[1])
 
     ### END OF STUDENT CODE ####
     ############################

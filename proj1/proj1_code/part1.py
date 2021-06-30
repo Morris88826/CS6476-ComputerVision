@@ -24,11 +24,14 @@ def create_Gaussian_kernel_1D(ksize: int, sigma: int) -> np.ndarray:
       of the 1d values on the kernel (think of a number line, with a peak at the center).
     - The goal is to discretize a 1d continuous distribution onto a vector.
     """
-    
-    raise NotImplementedError(
-        "`create_Gaussian_kernel_1D` function in `part1.py` needs to be implemented"
-    )
-    
+
+    mean = ksize//2 # mean = floor (ksize / 2)
+
+    kernel = np.arange(ksize)
+    kernel = (1/(sigma*np.sqrt(2*np.pi)))*(np.exp((-1/2)*np.power((kernel - mean)/(sigma), 2))) # 1D gaussian distribution
+    kernel = kernel/np.sum(kernel) # values that sum to 1
+    kernel = np.reshape(kernel, (-1, 1)) # reshape to (k,1)
+
     return kernel
 
 def create_Gaussian_kernel_2D(cutoff_frequency: int) -> np.ndarray:
@@ -61,9 +64,9 @@ def create_Gaussian_kernel_2D(cutoff_frequency: int) -> np.ndarray:
     ############################
     ### TODO: YOUR CODE HERE ###
 
-    raise NotImplementedError(
-        "`create_Gaussian_kernel_2D` function in `part1.py` needs to be implemented"
-    )
+    k = cutoff_frequency*4 + 1
+    sd = cutoff_frequency
+    kernel = np.outer(create_Gaussian_kernel_1D(k, sd), create_Gaussian_kernel_1D(k, sd))
 
     ### END OF STUDENT CODE ####
     ############################
@@ -104,9 +107,23 @@ def my_conv2d_numpy(image: np.ndarray, filter: np.ndarray) -> np.ndarray:
     ############################
     ### TODO: YOUR CODE HERE ###
 
-    raise NotImplementedError(
-        "`my_conv2d_numpy` function in `part1.py` needs to be implemented"
-    )
+    m, n, c = image.shape
+    k, j = filter.shape
+
+    pad_y = k//2
+    pad_x = j//2
+
+    filter = np.expand_dims(filter, -1)
+    filter = np.repeat(filter, c, axis=-1)
+
+    # Padding
+    padded_image = np.zeros((m+2*pad_y,n+2*pad_x,c))
+    padded_image[pad_y:pad_y+m, pad_x:pad_x+n] = image
+    filtered_image = np.copy(image)
+
+    for row in range(pad_y, pad_y+m):
+      for col in range(pad_x, pad_x+n):
+        filtered_image[row-pad_y, col-pad_x] = np.sum(padded_image[row-pad_y:row+pad_y+1, col-pad_x:col+pad_x+1] * filter, axis=(0,1))
 
     ### END OF STUDENT CODE ####
     ############################
@@ -152,9 +169,9 @@ def create_hybrid_image(
     ############################
     ### TODO: YOUR CODE HERE ###
 
-    raise NotImplementedError(
-        "`create_hybrid_image` function in `part1.py` needs to be implemented"
-    )
+    low_frequencies = my_conv2d_numpy(image1, filter)
+    high_frequencies = image2-my_conv2d_numpy(image2, filter) # removing the low frequency content
+    hybrid_image = np.clip(low_frequencies + high_frequencies, 0, 1)
 
     ### END OF STUDENT CODE ####
     ############################
