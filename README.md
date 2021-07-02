@@ -6,7 +6,7 @@ Coding: Completed
 Report: Almost completed
 
 ## Project 2
-Coding: Completed Part 1
+Coding: Completed Part 1~3
 
 Report: Not Completed
 
